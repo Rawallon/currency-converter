@@ -21,7 +21,7 @@ This counts as a feature, right?
 
  ```bash
 # Clone this repo
-$ git clone <https://github.com/Rawallon/currencyversion>
+$ git clone <https://github.com/Rawallon/currency-converter>
 
 # Install dependencies
 $ npm install
