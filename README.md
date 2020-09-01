@@ -12,19 +12,14 @@ This was a quick currency conversion project made using React and the [Foreign e
 This counts as a feature, right?
 
 ## TODO
- - Cleaner code and overall structure
- - Resizable input
- - Bigger font for higher screens?
- - Maybe some graphs?
+ - Graph showing selected currencies price
+ - Maybe resizable input?
 
  ## Running it
 
  ```bash
 # Clone this repo
 $ git clone <https://github.com/Rawallon/currency-converter>
-
-# Install dependencies
-$ npm install
 
 # To make it start!
 $ npm start
