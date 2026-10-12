@@ -42,9 +42,15 @@ input {
   background: #fff;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  position: relative;
+}
+
+.row {
+  display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
 }
 
 .content span {
@@ -153,5 +159,59 @@ input:focus {
 @keyframes rate-note-in {
   to {
     opacity: 1;
+  }
+}
+
+/* Extra currencies: quiet by default, they show up under the target currency */
+.row.extra {
+  justify-content: flex-end;
+}
+
+.extra-remove {
+  border: 0;
+  background: transparent;
+  color: #999;
+  font-size: 0.7em;
+  line-height: 1;
+  padding: 0 0.3em;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.row.extra:hover .extra-remove,
+.extra-remove:focus {
+  opacity: 0.8;
+}
+
+.add-currency {
+  position: absolute;
+  left: 50%;
+  bottom: -0.6em;
+  transform: translateX(-50%);
+  width: 1.2em;
+  height: 1.2em;
+  padding: 0;
+  border: 1px solid #e2e2e2;
+  border-radius: 50%;
+  background: #fff;
+  color: #999;
+  font-size: 0.8em;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.35;
+  transition: opacity 0.2s;
+}
+.content:hover .add-currency,
+.add-currency:focus {
+  opacity: 0.9;
+}
+
+/* No hover on touch screens: keep the controls faintly visible instead */
+@media (hover: none) {
+  .extra-remove {
+    opacity: 0.5;
+  }
+  .add-currency {
+    opacity: 0.55;
   }
 }

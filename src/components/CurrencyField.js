@@ -2,7 +2,7 @@ import React from "react";
 import cData from './CurrencyData';
 import { DebouncedField } from "./DebouncedField";
 
-export default function Currencyfield({hoverMouse,setHoverMouse,selectedCurrency,setSelectedCurrency,currencyOptions,currencyQuant,changeInput,type}) {
+export default function Currencyfield({hoverMouse,setHoverMouse,selectedCurrency,setSelectedCurrency,currencyOptions,currencyQuant,changeInput,onBlur,type}) {
     return (
     <>
       <select
@@ -26,6 +26,7 @@ export default function Currencyfield({hoverMouse,setHoverMouse,selectedCurrency
         type="number"
         debounceTimeout={0}
         onChange={(e) => changeInput(e)}
+        onBlur={onBlur}
       />
     </>
   );

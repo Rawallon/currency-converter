@@ -44,3 +44,27 @@ export function describeDate(isoDate) {
   if (days === 1) return `${label} (yesterday)`;
   return `${label} (${days} days ago)`;
 }
+
+// Extra target currencies shown under the main pair
+export const MAX_EXTRAS = 4;
+const EXTRAS_KEY = "currencyversion:extras";
+
+export function loadExtras() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(EXTRAS_KEY));
+    if (Array.isArray(saved)) {
+      return saved.filter((code) => typeof code === "string").slice(0, MAX_EXTRAS);
+    }
+  } catch (e) {
+    // storage unavailable or corrupted: start with none
+  }
+  return [];
+}
+
+export function saveExtras(extras) {
+  try {
+    localStorage.setItem(EXTRAS_KEY, JSON.stringify(extras));
+  } catch (e) {
+    // best effort
+  }
+}
