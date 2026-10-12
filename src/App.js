@@ -3,35 +3,50 @@ import "./App.css";
 import logo from "./logo.png";
 import Currencyfield from "./components/CurrencyField";
 import InstallButton from "./components/InstallButton";
+import { loadRates, saveRates, crossRate } from "./ratesCache";
 
 const API = "https://api.frankfurter.dev/v1/latest";
 
 const format = (n) => (Number.isFinite(n) ? n.toFixed(2) : "0.00");
 
 function App() {
+  // Last known rates (from a previous visit), so the app is usable before the network answers
+  const [table, setTable] = useState(loadRates);
   const [fromAmount, setFromAmount] = useState("1.00");
   const [toAmount, setToAmount] = useState("1.00");
   const [fromSelected, setFromSelected] = useState("USD");
-  const [toSelected, setToSelected] = useState("USD");
+  const [toSelected, setToSelected] = useState(() => {
+    const cached = loadRates();
+    return cached ? Object.keys(cached.rates).find((c) => c !== "USD") : "USD";
+  });
   const [hoverMouse, setHoverMouse] = useState(true); // Animation
-  const [currencyOptions, setCurrencyOptions] = useState(["USD"]);
   // How many `to` units 1 `from` is worth. The only thing the API gives us per pair;
   // typing an amount is pure front-end math against it.
-  const [rate, setRate] = useState(1);
+  const [rate, setRate] = useState(() =>
+    table ? crossRate(table.rates, "USD", toSelected) || 1 : 1
+  );
+  const [offline, setOffline] = useState(false);
 
-  // Load the currency list once
+  const currencyOptions = table ? Object.keys(table.rates) : ["USD"];
+
+  // Load the full rate table once and cache it
   useEffect(() => {
     fetch(`${API}?base=USD`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("Could not load exchange rates");
+        return res.json();
+      })
       .then((data) => {
-        const codes = ["USD", ...Object.keys(data.rates)];
-        const first = codes[1];
-        setCurrencyOptions(codes);
-        setToSelected(first);
-      });
+        const rates = { USD: 1, ...data.rates };
+        saveRates(rates, data.date);
+        setTable({ rates, date: data.date });
+        setToSelected((current) => (current === "USD" ? Object.keys(data.rates)[0] : current));
+        setOffline(false);
+      })
+      .catch(() => setOffline(true));
   }, []);
 
-  // Hit the API only when a currency changes
+  // Hit the API only when a currency changes; fall back to the cached table if it fails
   useEffect(() => {
     if (fromSelected === toSelected) {
       setRate(1);
@@ -39,13 +54,25 @@ function App() {
     }
     let stale = false;
     fetch(`${API}?base=${fromSelected}&symbols=${toSelected}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("Could not load exchange rate");
+        return res.json();
+      })
       .then((data) => {
-        if (!stale) setRate(data.rates[toSelected]);
+        if (stale) return;
+        setRate(data.rates[toSelected]);
+        setOffline(false);
+      })
+      .catch(() => {
+        if (stale) return;
+        const cached = crossRate((table || loadRates() || {}).rates, fromSelected, toSelected);
+        if (cached) setRate(cached);
+        setOffline(true);
       });
     return () => {
       stale = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fromSelected, toSelected]);
 
   // Keep the result in sync with the stored rate
@@ -97,6 +124,9 @@ function App() {
 
         />
       </div>
+      {offline && table && (
+        <p className="offline-note">Offline: rates from {table.date}</p>
+      )}
       <InstallButton />
     </div>
   );

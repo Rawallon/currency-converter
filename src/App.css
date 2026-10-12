@@ -130,3 +130,14 @@ input:focus {
 .install-btn:hover {
   border-color: #888;
 }
+
+.offline-note {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  font-family: "Rubik", sans-serif;
+  font-size: 0.85rem;
+  color: #666;
+}
