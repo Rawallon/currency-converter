@@ -237,3 +237,33 @@ input:focus {
     opacity: 0.55;
   }
 }
+
+/* Phones: keep the single row but scale it so it always fits the screen.
+   19.6 is the card's width in px per px of font size (with currency codes showing). */
+@media (max-width: 560px) {
+  .App {
+    font-size: min(1.7em, calc((100vw - 32px) / 19.6));
+  }
+  .select-css,
+  .show-css {
+    margin: 3px;
+  }
+  input {
+    max-width: 4.2em;
+  }
+  .content {
+    padding: 8px 6px;
+  }
+  .content span {
+    margin: 0 2px;
+  }
+  .App-logo {
+    box-sizing: border-box;
+    width: min(350px, 100%);
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    top: auto;
+    bottom: 100%;
+  }
+}
