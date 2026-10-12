@@ -112,3 +112,21 @@ input:focus {
   border-color: #aaa;
   outline: none;
 }
+
+.install-btn {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.6em 1.4em;
+  border: 1px solid #aaa;
+  border-radius: 2em;
+  background: #fff;
+  color: #222;
+  font-family: "Rubik", sans-serif;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.install-btn:hover {
+  border-color: #888;
+}

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./App.css";
 import logo from "./logo.png";
 import Currencyfield from "./components/CurrencyField";
+import InstallButton from "./components/InstallButton";
 
 const API = "https://api.frankfurter.dev/v1/latest";
 
@@ -96,6 +97,7 @@ function App() {
 
         />
       </div>
+      <InstallButton />
     </div>
   );
 }
