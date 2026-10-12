@@ -42,15 +42,9 @@ input {
   background: #fff;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  position: relative;
-}
-
-.row {
-  display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 
 .content span {
@@ -162,9 +156,30 @@ input:focus {
   }
 }
 
-/* Extra currencies: quiet by default, they show up under the target currency */
+/* Extra currencies live in their own small card under the main one, so the main card
+   (and its position on the page) never changes. */
+.card-wrap {
+  position: relative;
+}
+
+.extras-card {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 0.9em;
+  padding: 4px 10px;
+  border-radius: 0.5em;
+  background: #fff;
+  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
 .row.extra {
-  justify-content: flex-end;
+  display: flex;
+  align-items: center;
 }
 
 .extra-remove {
@@ -183,10 +198,10 @@ input:focus {
   opacity: 0.8;
 }
 
+/* A faint "+": under the main card until there are extras, then on the extras card */
 .add-currency {
   position: absolute;
   left: 50%;
-  bottom: -0.6em;
   transform: translateX(-50%);
   width: 1.2em;
   height: 1.2em;
@@ -201,7 +216,14 @@ input:focus {
   opacity: 0.35;
   transition: opacity 0.2s;
 }
-.content:hover .add-currency,
+.add-currency.below {
+  top: 100%;
+  margin-top: 0.8em;
+}
+.add-currency.on-card {
+  bottom: -0.6em;
+}
+.card-wrap:hover .add-currency,
 .add-currency:focus {
   opacity: 0.9;
 }

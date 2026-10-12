@@ -183,11 +183,23 @@ function App() {
       : { text: `Updating rates\u2026 (saved ${saved})`, delayed: true };
   }
 
+  const canAdd = table && extras.length < MAX_EXTRAS;
+  const addButton = (position) => (
+    <button
+      className={`add-currency ${position}`}
+      onClick={addExtra}
+      aria-label="Add another currency"
+      title="Add currency"
+    >
+      +
+    </button>
+  );
+
   return (
     <div className="App">
-      <div className="content">
-        <img src={logo} className="App-logo" alt="logo" />
-        <div className="row">
+      <div className="card-wrap">
+        <div className="content">
+          <img src={logo} className="App-logo" alt="logo" />
           <Currencyfield
             hoverMouse={hoverMouse}
             setHoverMouse={setHoverMouse}
@@ -208,40 +220,41 @@ function App() {
             currencyQuant={toAmount}
             changeInput={changeInputTo}
             type={'to'}
-
           />
         </div>
-        {shownExtras.map(({ code, index, rate: extraRate }) => (
-          <div className="row extra" key={index}>
-            <button
-              className="extra-remove"
-              onClick={() => removeExtra(index)}
-              aria-label={`Remove ${code}`}
-              title="Remove"
-            >
-              &times;
-            </button>
-            <Currencyfield
-              hoverMouse={hoverMouse}
-              setHoverMouse={setHoverMouse}
-              selectedCurrency={code}
-              setSelectedCurrency={(next) => changeExtraCode(index, next)}
-              currencyOptions={currencyOptions}
-              currencyQuant={
-                editing && editing.index === index
-                  ? editing.text
-                  : format(parseFloat(fromAmount) * extraRate)
-              }
-              changeInput={(e) => changeExtraAmount(index, extraRate, e)}
-              onBlur={() => setEditing(null)}
-              type={"extra"}
-            />
+        {shownExtras.length > 0 ? (
+          <div className="extras-card">
+            {shownExtras.map(({ code, index, rate: extraRate }) => (
+              <div className="row extra" key={index}>
+                <button
+                  className="extra-remove"
+                  onClick={() => removeExtra(index)}
+                  aria-label={`Remove ${code}`}
+                  title="Remove"
+                >
+                  &times;
+                </button>
+                <Currencyfield
+                  hoverMouse={hoverMouse}
+                  setHoverMouse={setHoverMouse}
+                  selectedCurrency={code}
+                  setSelectedCurrency={(next) => changeExtraCode(index, next)}
+                  currencyOptions={currencyOptions}
+                  currencyQuant={
+                    editing && editing.index === index
+                      ? editing.text
+                      : format(parseFloat(fromAmount) * extraRate)
+                  }
+                  changeInput={(e) => changeExtraAmount(index, extraRate, e)}
+                  onBlur={() => setEditing(null)}
+                  type={"extra"}
+                />
+              </div>
+            ))}
+            {canAdd && addButton("on-card")}
           </div>
-        ))}
-        {table && extras.length < MAX_EXTRAS && (
-          <button className="add-currency" onClick={addExtra} aria-label="Add another currency" title="Add currency">
-            +
-          </button>
+        ) : (
+          canAdd && addButton("below")
         )}
       </div>
       {note && (
