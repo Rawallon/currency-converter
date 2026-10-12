@@ -184,6 +184,11 @@ function App() {
   }
 
   const canAdd = table && extras.length < MAX_EXTRAS;
+  // Characters beyond what the default amount box fits; phones shrink the font to make room
+  const extraChars = [fromAmount, toAmount].reduce(
+    (sum, amount) => sum + Math.max(0, String(amount).length - 5),
+    0
+  );
   const addButton = (position) => (
     <button
       className={`add-currency ${position}`}
@@ -196,7 +201,7 @@ function App() {
   );
 
   return (
-    <div className="App">
+    <div className="App" style={{ "--extra": extraChars }}>
       <div className="card-wrap">
         <div className="content">
           <img src={logo} className="App-logo" alt="logo" />

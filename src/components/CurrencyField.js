@@ -24,6 +24,7 @@ export default function Currencyfield({hoverMouse,setHoverMouse,selectedCurrency
         minLength={0}
         value={currencyQuant}
         type="number"
+        style={{ "--chars": String(currencyQuant === undefined ? "" : currencyQuant).length }}
         debounceTimeout={0}
         onChange={(e) => changeInput(e)}
         onBlur={onBlur}

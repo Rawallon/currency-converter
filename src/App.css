@@ -31,7 +31,9 @@ input {
   padding: 0.6em 0 0.5em 0;
   height: 100%;
   width: 100%;
-  max-width: 5em;
+  /* grows with the number so long amounts are not cut off */
+  width: max(5em, calc(var(--chars, 5) * 0.62em + 0.8em));
+  max-width: none;
   font-weight: 600;
   text-align: center;
 }
@@ -243,14 +245,14 @@ input:focus {
    (measured with currency codes showing, its widest state), minus 12px of space per side. */
 @media (max-width: 560px) {
   .App {
-    font-size: min(1.7em, calc((100vw - 57px) / 19.8));
+    font-size: min(1.7em, calc((100vw - 57px) / (19.8 + 0.62 * var(--extra, 0))));
   }
   .select-css,
   .show-css {
     margin: 3px;
   }
   input {
-    max-width: 4.2em;
+    width: max(4.2em, calc(var(--chars, 5) * 0.62em + 0.8em));
   }
   .content {
     padding: 8px 6px;
