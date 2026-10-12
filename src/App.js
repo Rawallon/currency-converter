@@ -9,30 +9,27 @@ function App() {
   const [fromCurrency, setFromCurrency] = useState(1.0);
   const [toCurrency, setToCurrency] = useState(1.0);
   //Select
-  const [fromSelected, setFromSelected] = useState("")
-  const [toSelected, setToSelected] = useState("")
+  const [fromSelected, setFromSelected] = useState("USD")
+  const [toSelected, setToSelected] = useState("EUR")
   //Misc
   const [hoverMouse, setHoverMouse] = useState(true); //Animation
-  const [exchangeRates, setExchangeRates] = useState([]);
+  const [exchangeRates, setExchangeRates] = useState({});
   const [currencyOptions, setCurrencyOptions] = useState([]);
 
   useEffect(() => {
-    //  First fetch when the page is loaded
-    fetch("https://api.exchangeratesapi.io/latest?base=USD")
-      .then((res) => res.json())
+    fetch(`https://api.frankfurter.dev/v1/latest?base=${fromSelected}`)
       .then((res) => {
-        //Changes the "select"
-        setCurrencyOptions(Object.keys(res.rates));
-        setFromSelected(res.base)
-        setToSelected(Object.keys(res.rates)[0])
-        //Sets the exchange rate value and changes the input
-        setExchangeRates(Object.values(res.rates));
-        setFromCurrency(parseFloat(1.0).toFixed(2));
-        setToCurrency(
-          parseFloat(res.rates[Object.keys(res.rates)[0]]).toFixed(2)
+        if (!res.ok) throw new Error("Could not load exchange rates");
+        return res.json();
+      })
+      .then((res) => {
+        setExchangeRates({ ...res.rates, [res.base]: 1 });
+        setCurrencyOptions(
+          Array.from(new Set([res.base, ...Object.keys(res.rates)]))
         );
-      });
-  }, []);
+      })
+      .catch((error) => console.error(error));
+  }, [fromSelected]);
 
   //Controls the inputs
   //this could also be done base on e.target.id
@@ -45,7 +42,7 @@ function App() {
     setToCurrency(
       parseFloat(
         Math.abs(e.target.value) *
-          exchangeRates[currencyOptions.indexOf(toSelected)]
+          exchangeRates[toSelected]
       ).toFixed(2)
     );
   };
@@ -59,7 +56,7 @@ function App() {
     setFromCurrency(
       parseFloat(
         Math.abs(e.target.value) /
-          exchangeRates[currencyOptions.indexOf(toSelected)]
+          exchangeRates[toSelected]
       ).toFixed(2)
     );
   };
@@ -67,28 +64,19 @@ function App() {
     //Controls the selects
     const changeSelectFrom = (e) => {
       setFromSelected(e)
-      setToCurrency(parseFloat(toCurrency / exchangeRates[currencyOptions.indexOf(e)]).toFixed(2))
     }
   
     const changeSelectTo = (e) => {
       setToSelected(e)
-      setFromCurrency(
-        parseFloat(
-          Math.abs(fromCurrency) /
-            exchangeRates[currencyOptions.indexOf(toSelected)]
-        ).toFixed(2))
     }
 
   useEffect(() => {
-    // Watches if any of it was changed then gets a different exchange rate
-    if (toSelected !== undefined && fromSelected !== undefined) {
-      fetch(
-        "https://api.exchangeratesapi.io/latest?base=" + fromSelected
-      )
-        .then((res) => res.json())
-        .then((data) => setExchangeRates(Object.values(data.rates)));
+    if (exchangeRates[toSelected]) {
+      setToCurrency(
+        parseFloat(fromCurrency * exchangeRates[toSelected]).toFixed(2)
+      );
     }
-  }, [toSelected,fromSelected]);
+  }, [exchangeRates, fromCurrency, toSelected]);
 
 
   

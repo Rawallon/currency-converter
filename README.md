@@ -1,7 +1,9 @@
 ## Currencyversion
 > For all you currency conversion needs!
 
-This was a quick currency conversion project made using React and the [Foreign exchange rates API](https://exchangeratesapi.io/) in the style of [dolarhoje.com](https://dolarhoje.com/)! 
+**[Try it live](https://rawallon.github.io/currency-converter/)**
+
+This was a quick currency conversion project made using React and [Frankfurter](https://frankfurter.dev/) in the style of [dolarhoje.com](https://dolarhoje.com/). Rates update daily and are intended for informational use.
 
 ![Image of it working for it](https://i.imgur.com/WpmEwmo.gif)
 
