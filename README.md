@@ -13,13 +13,17 @@ This was a quick currency conversion project made using React and [Frankfurter](
 - **Installable.** On Chrome or Edge use the install icon in the address bar, or the Install app button. On iPhone use Share, then Add to Home Screen.
 - **Fits phones.** The card scales down to fit small screens instead of overflowing.
 
-![Image of it working for it](https://i.imgur.com/WpmEwmo.gif)
+![Typing an amount, adding currencies and editing one of them](docs/demo.gif)
 
 > It uses both the name of the currency and its symbol
 
-![ooh, fancy!](https://i.imgur.com/sNlOCfo.png)
+![Currency symbols shown when the mouse leaves the selects](docs/symbols.png)
 
 This counts as a feature, right?
+
+On a phone the card scales down to fit, with the extra currencies in their own card below it:
+
+<img src="docs/mobile.png" alt="The converter on a phone" width="320">
 
 ## TODO
  - Graph showing selected currencies price
