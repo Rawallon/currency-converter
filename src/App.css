@@ -239,10 +239,11 @@ input:focus {
 }
 
 /* Phones: keep the single row but scale it so it always fits the screen.
-   19.6 is the card's width in px per px of font size (with currency codes showing). */
+   The card is about 19.8px wide per px of font size plus 33px of fixed margins/padding
+   (measured with currency codes showing, its widest state), minus 12px of space per side. */
 @media (max-width: 560px) {
   .App {
-    font-size: min(1.7em, calc((100vw - 32px) / 19.6));
+    font-size: min(1.7em, calc((100vw - 57px) / 19.8));
   }
   .select-css,
   .show-css {
