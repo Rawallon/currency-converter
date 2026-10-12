@@ -131,13 +131,27 @@ input:focus {
   border-color: #888;
 }
 
-.offline-note {
+.rate-note {
   position: fixed;
   top: 1rem;
   left: 50%;
   transform: translateX(-50%);
   margin: 0;
+  padding: 0 1rem;
+  width: max-content;
+  max-width: 90vw;
+  text-align: center;
   font-family: "Rubik", sans-serif;
   font-size: 0.85rem;
   color: #666;
+}
+/* "Updating..." only appears if the refresh is slow, so it does not flash on every load */
+.rate-note-delayed {
+  opacity: 0;
+  animation: rate-note-in 0.2s ease 1.2s forwards;
+}
+@keyframes rate-note-in {
+  to {
+    opacity: 1;
+  }
 }

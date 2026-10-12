@@ -2,10 +2,17 @@
 // Any pair can be derived from it: rate(from -> to) = rates[to] / rates[from].
 const KEY = "currencyversion:rates";
 
+const isValid = (saved) =>
+  saved &&
+  typeof saved.date === "string" &&
+  saved.rates &&
+  saved.rates.USD === 1 &&
+  Object.values(saved.rates).every((n) => Number.isFinite(n) && n > 0);
+
 export function loadRates() {
   try {
     const saved = JSON.parse(localStorage.getItem(KEY));
-    if (saved && saved.rates && saved.rates.USD === 1) return saved;
+    if (isValid(saved)) return { rates: saved.rates, date: saved.date };
   } catch (e) {
     // storage unavailable or corrupted: behave as if nothing is cached
   }
@@ -22,4 +29,18 @@ export function saveRates(rates, date) {
 
 export function crossRate(rates, from, to) {
   return rates && rates[from] && rates[to] ? rates[to] / rates[from] : null;
+}
+
+// "Oct 9 (2 days ago)". The date is the ECB reference day, so weekends and holidays
+// make it lag the calendar by a few days even when the data is current.
+export function describeDate(isoDate) {
+  const [y, m, d] = isoDate.split("-").map(Number);
+  const day = new Date(y, m - 1, d);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const days = Math.round((today - day) / 86400000);
+  const label = day.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  if (days <= 0) return `${label} (today)`;
+  if (days === 1) return `${label} (yesterday)`;
+  return `${label} (${days} days ago)`;
 }
