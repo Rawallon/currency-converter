@@ -24,7 +24,7 @@ export default function Currencyfield({hoverMouse,setHoverMouse,selectedCurrency
         minLength={0}
         value={currencyQuant}
         type="number"
-        debounceTimeout={500}
+        debounceTimeout={0}
         onChange={(e) => changeInput(e)}
       />
     </>

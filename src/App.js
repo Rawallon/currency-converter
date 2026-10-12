@@ -3,83 +3,72 @@ import "./App.css";
 import logo from "./logo.png";
 import Currencyfield from "./components/CurrencyField";
 
+const API = "https://api.frankfurter.dev/v1/latest";
+
+const format = (n) => (Number.isFinite(n) ? n.toFixed(2) : "0.00");
+
 function App() {
+  const [fromAmount, setFromAmount] = useState("1.00");
+  const [toAmount, setToAmount] = useState("1.00");
+  const [fromSelected, setFromSelected] = useState("USD");
+  const [toSelected, setToSelected] = useState("USD");
+  const [hoverMouse, setHoverMouse] = useState(true); // Animation
+  const [currencyOptions, setCurrencyOptions] = useState(["USD"]);
+  // How many `to` units 1 `from` is worth. The only thing the API gives us per pair;
+  // typing an amount is pure front-end math against it.
+  const [rate, setRate] = useState(1);
 
-  //Input
-  const [fromCurrency, setFromCurrency] = useState(1.0);
-  const [toCurrency, setToCurrency] = useState(1.0);
-  //Select
-  const [fromSelected, setFromSelected] = useState("USD")
-  const [toSelected, setToSelected] = useState("EUR")
-  //Misc
-  const [hoverMouse, setHoverMouse] = useState(true); //Animation
-  const [exchangeRates, setExchangeRates] = useState({});
-  const [currencyOptions, setCurrencyOptions] = useState([]);
-
+  // Load the currency list once
   useEffect(() => {
-    fetch(`https://api.frankfurter.dev/v1/latest?base=${fromSelected}`)
-      .then((res) => {
-        if (!res.ok) throw new Error("Could not load exchange rates");
-        return res.json();
-      })
-      .then((res) => {
-        setExchangeRates({ ...res.rates, [res.base]: 1 });
-        setCurrencyOptions(
-          Array.from(new Set([res.base, ...Object.keys(res.rates)]))
-        );
-      })
-      .catch((error) => console.error(error));
-  }, [fromSelected]);
+    fetch(`${API}?base=USD`)
+      .then((res) => res.json())
+      .then((data) => {
+        const codes = ["USD", ...Object.keys(data.rates)];
+        const first = codes[1];
+        setCurrencyOptions(codes);
+        setToSelected(first);
+      });
+  }, []);
 
-  //Controls the inputs
-  //this could also be done base on e.target.id
-  const changeInputFrom = (e) => {
-    if (e.target.value === "" || e.target.value === 0) {
-      setToCurrency(0.0);
+  // Hit the API only when a currency changes
+  useEffect(() => {
+    if (fromSelected === toSelected) {
+      setRate(1);
       return;
     }
-    setFromCurrency(parseFloat(e.target.value).toFixed(2));
-    setToCurrency(
-      parseFloat(
-        Math.abs(e.target.value) *
-          exchangeRates[toSelected]
-      ).toFixed(2)
-    );
+    let stale = false;
+    fetch(`${API}?base=${fromSelected}&symbols=${toSelected}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!stale) setRate(data.rates[toSelected]);
+      });
+    return () => {
+      stale = true;
+    };
+  }, [fromSelected, toSelected]);
+
+  // Keep the result in sync with the stored rate
+  useEffect(() => {
+    setToAmount(format(Math.abs(parseFloat(fromAmount)) * rate));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rate]);
+
+  // The field being typed in keeps its raw text; only the other side is formatted
+  const changeInputFrom = (e) => {
+    const value = Math.abs(parseFloat(e.target.value));
+    setFromAmount(e.target.value);
+    setToAmount(value ? format(value * rate) : "0.00");
   };
 
   const changeInputTo = (e) => {
-    if (e.target.value === "" || e.target.value === 0) {
-      setFromCurrency(0.0);
-      return;
-    }
-    setToCurrency(parseFloat(e.target.value).toFixed(2));
-    setFromCurrency(
-      parseFloat(
-        Math.abs(e.target.value) /
-          exchangeRates[toSelected]
-      ).toFixed(2)
-    );
+    const value = Math.abs(parseFloat(e.target.value));
+    setToAmount(e.target.value);
+    setFromAmount(value ? format(value / rate) : "0.00");
   };
 
-    //Controls the selects
-    const changeSelectFrom = (e) => {
-      setFromSelected(e)
-    }
-  
-    const changeSelectTo = (e) => {
-      setToSelected(e)
-    }
+  const changeSelectFrom = (code) => setFromSelected(code);
+  const changeSelectTo = (code) => setToSelected(code);
 
-  useEffect(() => {
-    if (exchangeRates[toSelected]) {
-      setToCurrency(
-        parseFloat(fromCurrency * exchangeRates[toSelected]).toFixed(2)
-      );
-    }
-  }, [exchangeRates, fromCurrency, toSelected]);
-
-
-  
   return (
     <div className="App">
       <div className="content">
@@ -90,7 +79,7 @@ function App() {
           selectedCurrency={fromSelected}
           setSelectedCurrency={changeSelectFrom}
           currencyOptions={currencyOptions}
-          currencyQuant={fromCurrency}
+          currencyQuant={fromAmount}
           changeInput={changeInputFrom}
           type={'from'}
         />
@@ -101,7 +90,7 @@ function App() {
           selectedCurrency={toSelected}
           setSelectedCurrency={changeSelectTo}
           currencyOptions={currencyOptions}
-          currencyQuant={toCurrency}
+          currencyQuant={toAmount}
           changeInput={changeInputTo}
           type={'to'}
 
